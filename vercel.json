@@ -1,22 +1,17 @@
 {
-  "buildCommand": "prisma generate && npm run build",
-  "devCommand": "npm run dev",
-  "installCommand": "npm install",
-  "framework": "nextjs",
-  "functions": {
-    "app/api/**/*.ts": {
-      "runtime": "nodejs18.x"
-    }
-  },
-  "env": {
-    "NODE_ENV": "production"
-  },
-  "build": {
+    "buildCommand": "prisma generate && npm run build",
+    "devCommand": "npm run dev",
+    "installCommand": "npm install",
+    "framework": "nextjs",
     "env": {
-      "DATABASE_URL": "postgresql://postgres.sykxdthixxmaywujonwk:Cutmauvang456@aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres",
-      "NEXTAUTH_SECRET": "hdjshfmdudjdnsudjdsajdndwoajsne2",
-      "NEXTAUTH_URL": "http://localhost:3000",
-      "NEXT_PUBLIC_BACKEND_URL": "http://localhost:3000/api"
+        "NODE_ENV": "production"
+    },
+    "build": {
+        "env": {
+            "DATABASE_URL": "postgresql://postgres.sykxdthixxmaywujonwk:Cutmauvang456@aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres",
+            "NEXTAUTH_SECRET": "hdjshfmdudjdnsudjdsajdndwoajsne2",
+            "NEXTAUTH_URL": "http://localhost:3000",
+            "NEXT_PUBLIC_BACKEND_URL": "http://localhost:3000/api"
+        }
     }
-  }
 }
