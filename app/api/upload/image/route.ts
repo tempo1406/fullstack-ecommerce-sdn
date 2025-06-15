@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-
-const { v2: cloudinary } = require("cloudinary");
+import { v2 as cloudinary } from "cloudinary";
 
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -69,9 +68,12 @@ export async function POST(request: NextRequest) {
         }
 
         const bytes = await file.arrayBuffer();
-        const buffer = Buffer.from(bytes);
-
-        const uploadResult = await new Promise<any>((resolve, reject) => {
+        const buffer = Buffer.from(bytes);        const uploadResult = await new Promise<{
+            secure_url: string;
+            public_id: string;
+            width: number;
+            height: number;
+        }>((resolve, reject) => {
             cloudinary.uploader
                 .upload_stream(
                     {
@@ -83,27 +85,26 @@ export async function POST(request: NextRequest) {
                             { fetch_format: "auto" },
                         ],
                     },
-                    (error: any, result: any) => {
+                    (error: unknown, result: unknown) => {
                         if (error) {
                             reject(error);
                         } else {
-                            resolve(result);
+                            resolve(result as {
+                                secure_url: string;
+                                public_id: string;
+                                width: number;
+                                height: number;
+                            });
                         }
                     }
                 )
-                .end(buffer);
-        });
-        const result = uploadResult as {
-            secure_url: string;
-            public_id: string;
-            width: number;
-            height: number;
-        };
+                .end(buffer);        });
+        
         return NextResponse.json({
-            url: result.secure_url,
-            public_id: result.public_id,
-            width: result.width,
-            height: result.height,
+            url: uploadResult.secure_url,
+            public_id: uploadResult.public_id,
+            width: uploadResult.width,
+            height: uploadResult.height,
         });
     } catch (error) {
         console.error("Cloudinary upload error:", error);

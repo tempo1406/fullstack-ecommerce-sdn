@@ -61,8 +61,7 @@ export default function SignUp() {
         router.push("/auth/signin")
       } else {
         toast.error(data.error || "Failed to create account")
-      }
-    } catch (error) {
+      }    } catch (_error) {
       toast.error("An error occurred. Please try again.")
     } finally {
       setIsLoading(false)

@@ -3,7 +3,7 @@
 import { Product } from "@/app/services/api";
 import Image from "next/image";
 import Link from "next/link";
-import { FaExternalLinkAlt, FaEdit, FaTrash, FaUser } from "react-icons/fa";
+import { FaExternalLinkAlt, FaEdit, FaUser } from "react-icons/fa";
 import { useSession } from "next-auth/react";
 import Badge from "./Badge";
 
