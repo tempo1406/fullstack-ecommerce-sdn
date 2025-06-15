@@ -31,8 +31,7 @@ export default function MainLayout({
     const handleSignOut = async () => {
         try {
             await signOut({ redirect: false });
-            toast.success("Signed out successfully!");
-        } catch (error) {
+            toast.success("Signed out successfully!");        } catch (_error) {
             toast.error("Error signing out");
         }
     };

@@ -1,18 +1,19 @@
 import { NextRequest, NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { PrismaClient } from "@prisma/client"
-import { authOptions } from "../../auth/[...nextauth]/route"
+import { authOptions } from "@/lib/auth"
 
 const prisma = new PrismaClient()
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const product = await prisma.product.findUnique({
       where: {
-        id: params.id
+        id: id
       },
       include: {
         user: {
@@ -44,7 +45,7 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions)
@@ -56,9 +57,10 @@ export async function PUT(
       )
     }
 
+    const { id } = await params;
     const existingProduct = await prisma.product.findUnique({
       where: {
-        id: params.id
+        id: id
       }
     })
 
@@ -97,11 +99,9 @@ export async function PUT(
         { error: "Stock must be a positive number" },
         { status: 400 }
       )
-    }
-
-    const updatedProduct = await prisma.product.update({
+    }    const updatedProduct = await prisma.product.update({
       where: {
-        id: params.id
+        id: id
       },
       data: {
         name,
@@ -136,7 +136,7 @@ export async function PUT(
 // DELETE /api/products/[id] - Delete product (authenticated, owner only)
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions)
@@ -148,10 +148,11 @@ export async function DELETE(
       )
     }
 
+    const { id } = await params;
     // Check if product exists and user owns it
     const existingProduct = await prisma.product.findUnique({
       where: {
-        id: params.id
+        id: id
       }
     })
 
@@ -167,11 +168,9 @@ export async function DELETE(
         { error: "Not authorized to delete this product" },
         { status: 403 }
       )
-    }
-
-    await prisma.product.delete({
+    }    await prisma.product.delete({
       where: {
-        id: params.id
+        id: id
       }
     })
 

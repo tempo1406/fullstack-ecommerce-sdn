@@ -86,31 +86,25 @@ async function main() {
       userId: user2.id,
     },
   ]
-
   for (const product of products) {
-    await prisma.product.upsert({
-      where: { 
-        // Use a combination of name and userId for uniqueness
-        name_userId: {
-          name: product.name,
-          userId: product.userId
-        }
-      },
-      update: {},
-      create: product,
-    })
+    // Check if product already exists by name and userId
+    const existingProduct = await prisma.product.findFirst({
+      where: {
+        name: product.name,
+        userId: product.userId
+      }
+    });    if (!existingProduct) {
+      await prisma.product.create({
+        data: product,
+      });
+    }
   }
 
-  console.log('✅ Database seeded successfully!')
-  console.log('📧 Sample users created:')
-  console.log('   - john@example.com (password: password123)')
-  console.log('   - jane@example.com (password: password123)')
-  console.log('🛍️ Sample products created: 6 items')
 }
 
 main()
   .catch((e) => {
-    console.error('❌ Error seeding database:', e)
+    console.error('Error seeding database:', e)
     process.exit(1)
   })
   .finally(async () => {
