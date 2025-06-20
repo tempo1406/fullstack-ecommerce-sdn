@@ -17,7 +17,8 @@ export default function OrdersPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [searchTerm, setSearchTerm] = useState("");
-    const [statusFilter, setStatusFilter] = useState("ALL");    useEffect(() => {
+    const [statusFilter, setStatusFilter] = useState("ALL");
+    useEffect(() => {
         if (status === "unauthenticated") {
             return;
         }
@@ -26,9 +27,9 @@ export default function OrdersPage() {
             fetchOrders();
         }
     }, [session, status]);
-
     useEffect(() => {
         filterOrders();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [orders, searchTerm, statusFilter]);
 
     const fetchOrders = async () => {
@@ -44,44 +45,54 @@ export default function OrdersPage() {
         } finally {
             setLoading(false);
         }
-    };    const filterOrders = () => {
+    };
+    const filterOrders = () => {
         let filtered = [...orders];
 
         // Filter by search term (order ID or product name)
         if (searchTerm) {
-            filtered = filtered.filter(order => 
-                order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                order.orderItems.some((item: any) => 
-                    item.product.name.toLowerCase().includes(searchTerm.toLowerCase())
-                )
+            filtered = filtered.filter(
+                (order) =>
+                    order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    order.orderItems.some((item) =>
+                        item.product.name
+                            .toLowerCase()
+                            .includes(searchTerm.toLowerCase())
+                    )
             );
         }
 
         // Filter by status
         if (statusFilter !== "ALL") {
-            filtered = filtered.filter(order => order.status === statusFilter);
+            filtered = filtered.filter(
+                (order) => order.status === statusFilter
+            );
         }
 
         // Sort by most recent first
-        filtered.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        filtered.sort(
+            (a, b) =>
+                new Date(b.createdAt).getTime() -
+                new Date(a.createdAt).getTime()
+        );
 
         setFilteredOrders(filtered);
     };
 
     const getStatusColor = (status: string) => {
         switch (status) {
-            case 'PENDING':
-                return 'text-yellow-600 bg-yellow-100';
-            case 'PAID':
-                return 'text-green-600 bg-green-100';
-            case 'SHIPPED':
-                return 'text-blue-600 bg-blue-100';
-            case 'DELIVERED':
-                return 'text-purple-600 bg-purple-100';
-            case 'CANCELLED':
-                return 'text-red-600 bg-red-100';
+            case "PENDING":
+                return "text-yellow-600 bg-yellow-100";
+            case "PAID":
+                return "text-green-600 bg-green-100";
+            case "SHIPPED":
+                return "text-blue-600 bg-blue-100";
+            case "DELIVERED":
+                return "text-purple-600 bg-purple-100";
+            case "CANCELLED":
+                return "text-red-600 bg-red-100";
             default:
-                return 'text-gray-600 bg-gray-100';
+                return "text-gray-600 bg-gray-100";
         }
     };
 
@@ -135,7 +146,8 @@ export default function OrdersPage() {
                     No Orders Yet
                 </h1>
                 <p className="text-gray-600 mb-6">
-                    You haven&apos;t placed any orders yet. Start shopping to see your orders here.
+                    You haven&apos;t placed any orders yet. Start shopping to
+                    see your orders here.
                 </p>
                 <Link
                     href="/"
@@ -145,10 +157,13 @@ export default function OrdersPage() {
                 </Link>
             </div>
         );
-    }    return (
+    }
+    return (
         <div className="max-w-6xl mx-auto p-6">
-            <h1 className="text-3xl font-bold mb-8">My Orders ({orders.length})</h1>
-            
+            <h1 className="text-3xl font-bold mb-8">
+                My Orders ({orders.length})
+            </h1>
+
             {/* Search and Filter Section */}
             <div className="bg-white rounded-lg shadow-md p-6 mb-6">
                 <div className="grid gap-4 md:grid-cols-2">
@@ -163,7 +178,7 @@ export default function OrdersPage() {
                             className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
                     </div>
-                    
+
                     {/* Status Filter */}
                     <div className="relative">
                         <FaFilter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
@@ -181,95 +196,117 @@ export default function OrdersPage() {
                         </select>
                     </div>
                 </div>
-                
+
                 {/* Results Summary */}
                 <div className="mt-4 text-sm text-gray-600">
                     Showing {filteredOrders.length} of {orders.length} orders
                 </div>
             </div>
-            
+
             {/* Orders List */}
             {filteredOrders.length === 0 ? (
                 <div className="text-center py-12">
                     <FaShoppingBag className="text-4xl text-gray-300 mb-4 mx-auto" />
-                    <h3 className="text-lg font-semibold text-gray-800 mb-2">No orders found</h3>
-                    <p className="text-gray-600">Try adjusting your search criteria or filters.</p>
+                    <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                        No orders found
+                    </h3>
+                    <p className="text-gray-600">
+                        Try adjusting your search criteria or filters.
+                    </p>
                 </div>
             ) : (
                 <div className="space-y-6">
                     {filteredOrders.map((order) => (
-                    <div key={order.id} className="bg-white rounded-lg shadow-md p-6">
-                        {/* Order Header */}
-                        <div className="flex items-center justify-between mb-4">
-                            <div>
-                                <h2 className="text-lg font-semibold">
-                                    Order #{order.id.slice(-8).toUpperCase()}
-                                </h2>
-                                <p className="text-gray-600 text-sm">
-                                    Placed on {new Date(order.createdAt).toLocaleDateString()}
-                                </p>
-                            </div>
-                            <div className="flex items-center gap-4">
-                                <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(order.status)}`}>
-                                    {order.status}
-                                </span>
-                                <Link
-                                    href={`/orders/${order.id}`}
-                                    className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
-                                >
-                                    <FaEye />
-                                    View Details
-                                </Link>
-                            </div>
-                        </div>
-
-                        {/* Order Items Preview */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
-                            {order.orderItems.slice(0, 3).map((item) => (
-                                <div key={item.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-md">
-                                    <div className="w-12 h-12 relative">
-                                        {item.product.image ? (
-                                            <Image
-                                                src={item.product.image}
-                                                alt={item.product.name}
-                                                fill
-                                                className="object-cover rounded-md"
-                                            />
-                                        ) : (
-                                            <div className="w-full h-full bg-gray-200 rounded-md flex items-center justify-center">
-                                                <FaShoppingBag className="text-gray-400 text-sm" />
-                                            </div>
-                                        )}
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                        <p className="font-medium text-sm truncate">
-                                            {item.product.name}
-                                        </p>
-                                        <p className="text-gray-600 text-xs">
-                                            Qty: {item.quantity} × ${item.price.toFixed(2)}
-                                        </p>
-                                    </div>
+                        <div
+                            key={order.id}
+                            className="bg-white rounded-lg shadow-md p-6"
+                        >
+                            {/* Order Header */}
+                            <div className="flex items-center justify-between mb-4">
+                                <div>
+                                    <h2 className="text-lg font-semibold">
+                                        Order #
+                                        {order.id.slice(-8).toUpperCase()}
+                                    </h2>
+                                    <p className="text-gray-600 text-sm">
+                                        Placed on{" "}
+                                        {new Date(
+                                            order.createdAt
+                                        ).toLocaleDateString()}
+                                    </p>
                                 </div>
-                            ))}
-                            {order.orderItems.length > 3 && (
-                                <div className="flex items-center justify-center p-3 bg-gray-50 rounded-md">
-                                    <span className="text-gray-600 text-sm">
-                                        +{order.orderItems.length - 3} more items
+                                <div className="flex items-center gap-4">
+                                    <span
+                                        className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(
+                                            order.status
+                                        )}`}
+                                    >
+                                        {order.status}
                                     </span>
-                                </div>                            )}
-                        </div>
+                                    <Link
+                                        href={`/orders/${order.id}`}
+                                        className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
+                                    >
+                                        <FaEye />
+                                        View Details
+                                    </Link>
+                                </div>
+                            </div>
 
-                        {/* Order Total */}
-                        <div className="flex items-center justify-between pt-4 border-t">
-                            <div className="text-gray-600">
-                                {order.orderItems.length} item{order.orderItems.length > 1 ? 's' : ''}
+                            {/* Order Items Preview */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+                                {order.orderItems.slice(0, 3).map((item) => (
+                                    <div
+                                        key={item.id}
+                                        className="flex items-center gap-3 p-3 bg-gray-50 rounded-md"
+                                    >
+                                        <div className="w-12 h-12 relative">
+                                            {item.product.image ? (
+                                                <Image
+                                                    src={item.product.image}
+                                                    alt={item.product.name}
+                                                    fill
+                                                    className="object-cover rounded-md"
+                                                />
+                                            ) : (
+                                                <div className="w-full h-full bg-gray-200 rounded-md flex items-center justify-center">
+                                                    <FaShoppingBag className="text-gray-400 text-sm" />
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <p className="font-medium text-sm truncate">
+                                                {item.product.name}
+                                            </p>
+                                            <p className="text-gray-600 text-xs">
+                                                Qty: {item.quantity} × $
+                                                {item.price.toFixed(2)}
+                                            </p>
+                                        </div>
+                                    </div>
+                                ))}
+                                {order.orderItems.length > 3 && (
+                                    <div className="flex items-center justify-center p-3 bg-gray-50 rounded-md">
+                                        <span className="text-gray-600 text-sm">
+                                            +{order.orderItems.length - 3} more
+                                            items
+                                        </span>
+                                    </div>
+                                )}
                             </div>
-                            <div className="text-xl font-bold">
-                                Total: ${order.totalAmount.toFixed(2)}
+
+                            {/* Order Total */}
+                            <div className="flex items-center justify-between pt-4 border-t">
+                                <div className="text-gray-600">
+                                    {order.orderItems.length} item
+                                    {order.orderItems.length > 1 ? "s" : ""}
+                                </div>
+                                <div className="text-xl font-bold">
+                                    Total: ${order.totalAmount.toFixed(2)}
+                                </div>
                             </div>
                         </div>
-                    </div>
-                ))}
+                    ))}
                 </div>
             )}
         </div>

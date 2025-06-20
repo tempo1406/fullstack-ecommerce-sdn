@@ -152,8 +152,8 @@ export default function ImageUpload({
         {/* Image preview */}
         {shouldShowImage && (
           <div className="relative">
-            <div className="relative w-full h-64 bg-gradient-to-r from-blue-100 to-green-100 rounded-md overflow-hidden border-2 border-dashed border-blue-300">
-              {imageToShow.startsWith('data:') ? (
+            <div className="relative w-full h-64 bg-gradient-to-r from-blue-100 to-green-100 rounded-md overflow-hidden border-2 border-dashed border-blue-300">              {imageToShow.startsWith('data:') ? (
+                // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={imageToShow}
                   alt="Preview"

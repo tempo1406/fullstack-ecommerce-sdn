@@ -8,7 +8,12 @@ import { Order, PaymentRequest } from "@/types/order";
 import { toast } from "react-toastify";
 import Link from "next/link";
 import Image from "next/image";
-import { FaArrowLeft, FaShoppingBag, FaCreditCard, FaSync } from "react-icons/fa";
+import {
+    FaArrowLeft,
+    FaShoppingBag,
+    FaCreditCard,
+    FaSync,
+} from "react-icons/fa";
 import LoadingSpinner from "@/app/components/LoadingSpinner";
 import OrderStatusTimeline from "@/app/components/OrderStatusTimeline";
 import ConfirmDialog from "@/app/components/ConfirmDialog";
@@ -29,11 +34,10 @@ export default function OrderDetailPage() {
         if (status === "unauthenticated") {
             router.push("/auth/signin");
             return;
-        }
-
-        if (session?.user && orderId) {
+        }        if (session?.user && orderId) {
             fetchOrder();
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [session, status, orderId]);
 
     const fetchOrder = async () => {
@@ -55,7 +59,9 @@ export default function OrderDetailPage() {
         setShowPaymentConfirm(true);
     };
 
-    const handlePayment = async (paymentMethod: 'MOCK' | 'STRIPE' | 'PAYOS') => {
+    const handlePayment = async (
+        paymentMethod: "MOCK" | "STRIPE" | "PAYOS"
+    ) => {
         if (!order) return;
 
         setPaymentLoading(true);
@@ -65,7 +71,7 @@ export default function OrderDetailPage() {
             const paymentData: PaymentRequest = {
                 orderId: order.id,
                 amount: order.totalAmount,
-                paymentMethod
+                paymentMethod,
             };
 
             const result = await OrderService.processPayment(paymentData);
@@ -87,18 +93,18 @@ export default function OrderDetailPage() {
 
     const getStatusColor = (status: string) => {
         switch (status) {
-            case 'PENDING':
-                return 'text-yellow-600 bg-yellow-100 border-yellow-200';
-            case 'PAID':
-                return 'text-green-600 bg-green-100 border-green-200';
-            case 'SHIPPED':
-                return 'text-blue-600 bg-blue-100 border-blue-200';
-            case 'DELIVERED':
-                return 'text-purple-600 bg-purple-100 border-purple-200';
-            case 'CANCELLED':
-                return 'text-red-600 bg-red-100 border-red-200';
+            case "PENDING":
+                return "text-yellow-600 bg-yellow-100 border-yellow-200";
+            case "PAID":
+                return "text-green-600 bg-green-100 border-green-200";
+            case "SHIPPED":
+                return "text-blue-600 bg-blue-100 border-blue-200";
+            case "DELIVERED":
+                return "text-purple-600 bg-purple-100 border-purple-200";
+            case "CANCELLED":
+                return "text-red-600 bg-red-100 border-red-200";
             default:
-                return 'text-gray-600 bg-gray-100 border-gray-200';
+                return "text-gray-600 bg-gray-100 border-gray-200";
         }
     };
 
@@ -110,7 +116,9 @@ export default function OrderDetailPage() {
         return (
             <div className="max-w-md mx-auto text-center py-12">
                 <h1 className="text-2xl font-bold text-red-600 mb-4">Error</h1>
-                <p className="text-gray-600 mb-6">{error || "Order not found"}</p>
+                <p className="text-gray-600 mb-6">
+                    {error || "Order not found"}
+                </p>
                 <div className="space-x-4">
                     <button
                         onClick={() => router.back()}
@@ -162,7 +170,10 @@ export default function OrderDetailPage() {
                         <h2 className="text-xl font-bold mb-4">Order Items</h2>
                         <div className="space-y-4">
                             {order.orderItems.map((item) => (
-                                <div key={item.id} className="flex items-center gap-4 p-4 border rounded-lg">
+                                <div
+                                    key={item.id}
+                                    className="flex items-center gap-4 p-4 border rounded-lg"
+                                >
                                     <div className="w-16 h-16 relative">
                                         {item.product.image ? (
                                             <Image
@@ -178,14 +189,20 @@ export default function OrderDetailPage() {
                                         )}
                                     </div>
                                     <div className="flex-1">
-                                        <h3 className="font-semibold">{item.product.name}</h3>
+                                        <h3 className="font-semibold">
+                                            {item.product.name}
+                                        </h3>
                                         <p className="text-gray-600 text-sm">
-                                            ${item.price.toFixed(2)} × {item.quantity}
+                                            ${item.price.toFixed(2)} ×{" "}
+                                            {item.quantity}
                                         </p>
                                     </div>
                                     <div className="text-right">
                                         <p className="font-semibold">
-                                            ${(item.price * item.quantity).toFixed(2)}
+                                            $
+                                            {(
+                                                item.price * item.quantity
+                                            ).toFixed(2)}
                                         </p>
                                     </div>
                                 </div>
@@ -202,14 +219,17 @@ export default function OrderDetailPage() {
                     </div>
 
                     {/* Payment Section for Pending Orders */}
-                    {order.status === 'PENDING' && (
+                    {order.status === "PENDING" && (
                         <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
                             <div className="flex items-center gap-3 mb-4">
                                 <FaCreditCard className="text-yellow-600 text-xl" />
-                                <h3 className="text-lg font-semibold text-yellow-800">Payment Required</h3>
+                                <h3 className="text-lg font-semibold text-yellow-800">
+                                    Payment Required
+                                </h3>
                             </div>
                             <p className="text-yellow-700 mb-4">
-                                Your order is waiting for payment. Click the button below to complete your purchase.
+                                Your order is waiting for payment. Click the
+                                button below to complete your purchase.
                             </p>
                             <button
                                 onClick={handlePaymentClick}
@@ -235,7 +255,7 @@ export default function OrderDetailPage() {
                 {/* Sidebar */}
                 <div className="space-y-6">
                     {/* Order Status Timeline */}
-                    <OrderStatusTimeline 
+                    <OrderStatusTimeline
                         status={order.status}
                         createdAt={order.createdAt}
                         updatedAt={order.updatedAt}
@@ -243,11 +263,19 @@ export default function OrderDetailPage() {
 
                     {/* Order Summary */}
                     <div className="bg-white rounded-lg shadow-md p-6">
-                        <h3 className="text-lg font-semibold mb-4">Order Summary</h3>
+                        <h3 className="text-lg font-semibold mb-4">
+                            Order Summary
+                        </h3>
                         <div className="space-y-2 text-sm">
                             <div className="flex justify-between">
-                                <span className="text-gray-600">Order Date:</span>
-                                <span>{new Date(order.createdAt).toLocaleDateString()}</span>
+                                <span className="text-gray-600">
+                                    Order Date:
+                                </span>
+                                <span>
+                                    {new Date(
+                                        order.createdAt
+                                    ).toLocaleDateString()}
+                                </span>
                             </div>
                             <div className="flex justify-between">
                                 <span className="text-gray-600">Items:</span>
@@ -255,7 +283,11 @@ export default function OrderDetailPage() {
                             </div>
                             <div className="flex justify-between">
                                 <span className="text-gray-600">Status:</span>
-                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
+                                <span
+                                    className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
+                                        order.status
+                                    )}`}
+                                >
                                     {order.status}
                                 </span>
                             </div>
@@ -265,7 +297,7 @@ export default function OrderDetailPage() {
                                 <span>${order.totalAmount.toFixed(2)}</span>
                             </div>
                         </div>
-                        
+
                         {/* Action Buttons */}
                         <div className="mt-6 space-y-2">
                             <Link
@@ -289,12 +321,15 @@ export default function OrderDetailPage() {
             <ConfirmDialog
                 isOpen={showPaymentConfirm}
                 title="Confirm Payment"
-                message={`Are you sure you want to proceed with the payment of $${order.totalAmount.toFixed(2)}? This will process the payment using mock payment method.`}
+                message={`Are you sure you want to proceed with the payment of $${order.totalAmount.toFixed(
+                    2
+                )}? This will process the payment using mock payment method.`}
                 confirmText="Pay Now"
                 cancelText="Cancel"
-                onConfirm={() => handlePayment('MOCK')}
+                onConfirm={() => handlePayment("MOCK")}
                 onCancel={() => setShowPaymentConfirm(false)}
                 type="info"
             />
-        </div>    );
+        </div>
+    );
 }
