@@ -9,6 +9,7 @@ import {
     FaSignInAlt,
     FaSignOutAlt,
     FaUserPlus,
+    FaShoppingCart,
 } from "react-icons/fa";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -16,8 +17,10 @@ import { useEffect, useState } from "react";
 import { useSession, signOut } from "next-auth/react";
 import axios from "axios";
 import Banner from "./Banner";
+import { CartProvider, useCart } from "@/app/contexts/CartContext";
 
-export default function MainLayout({
+// Main layout content
+function MainLayoutContent({
     children,
 }: {
     children: React.ReactNode;
@@ -86,19 +89,26 @@ export default function MainLayout({
                             <NavLink href="/" active={pathname === "/"}>
                                 <FaHome className="mr-1" />
                                 Home
-                            </NavLink>
-                            {session && (
-                                <NavLink
-                                    href="/products/new"
-                                    active={pathname === "/products/new"}
-                                >
-                                    <FaPlus className="mr-1" />
-                                    Add Product
-                                </NavLink>
+                            </NavLink>                            {session && (
+                                <>
+                                    <NavLink
+                                        href="/products/new"
+                                        active={pathname === "/products/new"}
+                                    >
+                                        <FaPlus className="mr-1" />
+                                        Add Product
+                                    </NavLink>
+                                    <NavLink
+                                        href="/orders"
+                                        active={pathname === "/orders"}
+                                    >
+                                        My Orders
+                                    </NavLink>
+                                </>
                             )}
-                        </nav>
-                        {/* Authentication Navigation */}
+                        </nav>                        {/* Authentication Navigation */}
                         <div className="hidden md:flex items-center space-x-4">
+                            <CartNavigation />
                             {status === "loading" ? (
                                 <div className="text-sm text-gray-700">
                                     Loading...
@@ -219,5 +229,38 @@ function NavLink({
         >
             {children}
         </Link>
+    );
+}
+
+// Cart Navigation Component
+function CartNavigation() {
+    const { totalItems } = useCart();
+    
+    return (
+        <Link
+            href="/cart"
+            className="relative flex items-center text-sm text-gray-700 hover:text-gray-500 transition-colors"
+        >
+            <FaShoppingCart className="mr-1" />
+            Cart
+            {totalItems > 0 && (
+                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                    {totalItems}
+                </span>
+            )}
+        </Link>
+    );
+}
+
+// Main Layout with Cart Provider
+export default function MainLayout({
+    children,
+}: {
+    children: React.ReactNode;
+}) {
+    return (
+        <CartProvider>
+            <MainLayoutContent>{children}</MainLayoutContent>
+        </CartProvider>
     );
 }

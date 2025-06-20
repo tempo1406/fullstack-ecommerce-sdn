@@ -3,8 +3,10 @@
 import { Product } from "@/app/services/api";
 import Image from "next/image";
 import Link from "next/link";
-import { FaExternalLinkAlt, FaEdit, FaUser } from "react-icons/fa";
+import { FaExternalLinkAlt, FaEdit, FaUser, FaShoppingCart } from "react-icons/fa";
 import { useSession } from "next-auth/react";
+import { useCart } from "@/app/contexts/CartContext";
+import { toast } from "react-toastify";
 import Badge from "./Badge";
 
 interface ProductCardProps {
@@ -13,6 +15,7 @@ interface ProductCardProps {
 
 export default function ProductCard({ product }: ProductCardProps) {
     const { data: session } = useSession();
+    const { addItem } = useCart();
     const isOwner = session?.user?.id === product.userId;
     
     // Get image URL - check if it's from Cloudinary to apply optimizations
@@ -25,7 +28,30 @@ export default function ProductCard({ product }: ProductCardProps) {
             style: "currency",
             currency: "USD",
         }).format(price);
+    };    const handleAddToCart = () => {
+        if (product.stock === 0) {
+            toast.error("Product is out of stock");
+            return;
+        }
+
+        if (!product.id) {
+            toast.error("Invalid product");
+            return;
+        }
+
+        const cartItem = {
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            image: product.image || "",
+            quantity: 1,
+            stock: product.stock || 0
+        };
+
+        addItem(cartItem);
+        toast.success("Product added to cart!");
     };
+
     return (
         <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 flex flex-col group border border-gray-200 transform hover:-translate-y-1">
             {/* Product Image with hover effect */}
@@ -114,8 +140,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                     </div>
                 )}
             </div>
-            
-            {/* Action buttons */}
+              {/* Action buttons */}
             <div className="p-4 pt-0 flex gap-2">
                 <Link
                     href={`/products/${product.id}`}
@@ -124,6 +149,18 @@ export default function ProductCard({ product }: ProductCardProps) {
                     <span>View Details</span>
                     <FaExternalLinkAlt size={12} />
                 </Link>
+                
+                {/* Add to Cart Button */}
+                {!isOwner && (
+                    <button
+                        onClick={handleAddToCart}
+                        disabled={product.stock === 0}
+                        className="bg-green-600 text-white py-2 px-3 hover:bg-green-700 transition-colors rounded flex items-center justify-center disabled:bg-gray-400 disabled:cursor-not-allowed"
+                        title={product.stock === 0 ? "Out of Stock" : "Add to Cart"}
+                    >
+                        <FaShoppingCart size={14} />
+                    </button>
+                )}
                 
                 {/* Edit/Delete buttons for product owner */}
                 {isOwner && (
